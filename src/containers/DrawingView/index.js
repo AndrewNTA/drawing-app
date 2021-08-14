@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import rough from 'roughjs/bundled/rough.esm';
 import Button from '../../components/Button';
 import './styles.css';
@@ -11,9 +11,6 @@ const createLineElement = (x1, y1, x2, y2) => {
 };
 
 const DrawingView = () => {
-  const menuBarRef = useRef(null);
-  const menuBarHeight = menuBarRef.current && menuBarRef.current.clientHeight || 0;
-
   const [elements, setElements] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -55,7 +52,7 @@ const DrawingView = () => {
   };
 
   return (<div className="drawing-view-container">
-    <div className="drawing-menu-bar" ref={menuBarRef}>
+    <div className="drawing-menu-bar">
       <Button
         onClick={() => {}}
         text={'Selection'}
@@ -78,7 +75,7 @@ const DrawingView = () => {
       <canvas
         id="drawing-canvas"
         width={window.innerWidth}
-        height={window.innerHeight - menuBarHeight}
+        height={window.innerHeight}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
