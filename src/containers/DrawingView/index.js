@@ -44,8 +44,30 @@ const getElementByPosition = (x, y, elements) => {
   return elements.find(ele => isWithinElement(x, y, ele));
 };
 
+const useHistory = initialState => {
+  const [index, setIndex] = useState(0);
+  const [history, setHistory] = useState([initialState]);
+
+  const setState = (action, overwrite = false) => {
+    const newState = typeof action === 'function' ? action(history[index]) : action;
+    if (overwrite) {
+      const historyCopy = [...history];
+      historyCopy[index] = newState;
+      setHistory(historyCopy);
+    } else {
+      const updatedState = [...history].slice(0, index + 1);
+      setHistory([...updatedState, newState]);
+      setIndex(prevState => prevState + 1);
+    }
+  };
+
+  const undo = () => index > 0 && setIndex(prevState => prevState - 1);
+  const redo = () => index < history.length - 1 && setIndex(prevState => prevState + 1);
+  return [history[index], setState, undo, redo];
+};
+
 const DrawingView = () => {
-  const [elements, setElements] = useState([]);
+  const [elements, setElements, undo, redo] = useHistory([]);
   const [action, setAction] = useState(NONE_ACTION);
   const [tool, setTool] = useState(DRAW_LINE);
   const [selectedElement, setSelectedElement] = useState(null);
@@ -63,9 +85,9 @@ const DrawingView = () => {
   const updateElement = (id, x1, y1, clientX, clientY, tool) => {
     const updatedElement = createElement(id, x1, y1, clientX, clientY, tool);
 
-    const newElements = [...elements];
-    newElements[id] = updatedElement;
-    setElements(newElements);
+    const elementsCopy = [...elements];
+    elementsCopy[id] = updatedElement;
+    setElements(elementsCopy, true);
   };
 
   const handleMouseMove = (e) => {
@@ -97,6 +119,7 @@ const DrawingView = () => {
         const offsetX = clientX - element.x1;
         const offsetY = clientY - element.y1;
         setSelectedElement({ ...element, offsetX, offsetY });
+        setElements(prevState => prevState);
         setAction(MOVING);
       }
     } else {
@@ -132,8 +155,8 @@ const DrawingView = () => {
         title={'Draw a rectangle element, you can resize this element'}
         isSelected={tool === DRAW_RECTANGLE}
       />
-      <Button onClick={() => {}} text={'Undo'}/>
-      <Button onClick={() => {}} text={'Re-undo'}/>
+      <Button onClick={undo} text={'Undo'}/>
+      <Button onClick={redo} text={'Redo'}/>
     </div>
     <div className="drawing-screen">
       <canvas
