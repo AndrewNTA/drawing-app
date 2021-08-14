@@ -1,6 +1,9 @@
 import React, { useRef, useLayoutEffect } from 'react';
+import rough from 'roughjs/bundled/rough.esm';
 import Button from '../../components/Button';
 import './styles.css';
+
+const generator = rough.generator();
 
 const DrawingView = () => {
   const menuBarRef = useRef(null);
@@ -11,6 +14,10 @@ const DrawingView = () => {
     const context = canvas.getContext("2d");
 
     context.strokeRect(100, 100, 150, 100);
+
+    const roughCanvas = rough.canvas(canvas);
+    const rect = generator.rectangle(200, 200, 50, 90);
+    roughCanvas.draw(rect);
   });
 
   return (<div className="drawing-view-container">
