@@ -1,24 +1,58 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import rough from 'roughjs/bundled/rough.esm';
 import Button from '../../components/Button';
 import './styles.css';
 
 const generator = rough.generator();
 
+const createLineElement = (x1, y1, x2, y2) => {
+  const roughElement = generator.line(x1, y1, x2, y2);
+  return { x1, y1, x2, y2, roughElement }
+};
+
 const DrawingView = () => {
   const menuBarRef = useRef(null);
   const menuBarHeight = menuBarRef.current && menuBarRef.current.clientHeight || 0;
+
+  const [elements, setElements] = useState([]);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("drawing-canvas");
     const context = canvas.getContext("2d");
 
-    context.strokeRect(100, 100, 150, 100);
-
+    context.clearRect(0, 0, canvas.width, canvas.height);
     const roughCanvas = rough.canvas(canvas);
-    const rect = generator.rectangle(200, 200, 50, 90);
-    roughCanvas.draw(rect);
-  });
+
+    elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
+  }, [elements]);
+
+  const handleMouseMove = (e) => {
+    if(!isDrawing) {
+      return;
+    }
+
+    const { clientX, clientY } = e;
+    const index = elements.length - 1;
+    const { x1, y1 } = elements[index];
+    const updatedElement = createLineElement(x1, y1, clientX, clientY);
+
+    const newElements = [...elements];
+    newElements[index] = updatedElement;
+    setElements(newElements);
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDrawing(true);
+
+    const { clientX, clientY } = e;
+    const element = createLineElement(clientX, clientY, clientX, clientY);
+    setElements(prevState => [...prevState, element]);
+  };
+
+  const handleMouseUp = () => {
+    setIsDrawing(false);
+  };
 
   return (<div className="drawing-view-container">
     <div className="drawing-menu-bar" ref={menuBarRef}>
@@ -45,8 +79,11 @@ const DrawingView = () => {
         id="drawing-canvas"
         width={window.innerWidth}
         height={window.innerHeight - menuBarHeight}
+        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
       >
-        Canvas
+        My canvas
       </canvas>
     </div>
   </div>)
