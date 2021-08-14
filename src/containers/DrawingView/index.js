@@ -5,11 +5,12 @@ import './styles.css';
 
 const generator = rough.generator();
 
-const LINE = 'LINE';
-const RECTANGLE = 'RECTANGLE';
+const DRAW_LINE = 'DRAW_LINE';
+const DRAW_RECTANGLE = 'DRAW_RECTANGLE';
+const SELECT = 'SELECT';
 
 const createElement = (x1, y1, x2, y2, type) => {
-    const roughElement = type === LINE
+    const roughElement = type === DRAW_LINE
       ? generator.line(x1, y1, x2, y2)
       : generator.rectangle(x1, y1, x2 - x1, y2 - y1);
   return { x1, y1, x2, y2, roughElement }
@@ -18,7 +19,7 @@ const createElement = (x1, y1, x2, y2, type) => {
 const DrawingView = () => {
   const [elements, setElements] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [elementType, setElementType] = useState('LINE');
+  const [toolAction, setToolAction] = useState(DRAW_LINE);
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("drawing-canvas");
@@ -38,7 +39,7 @@ const DrawingView = () => {
     const { clientX, clientY } = e;
     const index = elements.length - 1;
     const { x1, y1 } = elements[index];
-    const updatedElement = createElement(x1, y1, clientX, clientY, elementType);
+    const updatedElement = createElement(x1, y1, clientX, clientY, toolAction);
 
     const newElements = [...elements];
     newElements[index] = updatedElement;
@@ -49,7 +50,7 @@ const DrawingView = () => {
     setIsDrawing(true);
 
     const { clientX, clientY } = e;
-    const element = createElement(clientX, clientY, clientX, clientY, elementType);
+    const element = createElement(clientX, clientY, clientX, clientY, toolAction);
     setElements(prevState => [...prevState, element]);
   };
 
@@ -60,21 +61,22 @@ const DrawingView = () => {
   return (<div className="drawing-view-container">
     <div className="drawing-menu-bar">
       <Button
-        onClick={() => {}}
+        onClick={() => {setToolAction(SELECT)}}
         text={'Select'}
         title={'Select an element and move'}
+        isSelected={toolAction === SELECT}
       />
       <Button
-        onClick={() => {setElementType(LINE)}}
+        onClick={() => {setToolAction(DRAW_LINE)}}
         text={'Line'}
         title={'Draw a line element, you can resize this element'}
-        isSelected={elementType === LINE}
+        isSelected={toolAction === DRAW_LINE}
       />
       <Button
-        onClick={() => {setElementType(RECTANGLE)}}
+        onClick={() => {setToolAction(DRAW_RECTANGLE)}}
         text={'Rectangle'}
         title={'Draw a rectangle element, you can resize this element'}
-        isSelected={elementType === RECTANGLE}
+        isSelected={toolAction === DRAW_RECTANGLE}
       />
       <Button onClick={() => {}} text={'Undo'}/>
       <Button onClick={() => {}} text={'Re-undo'}/>
