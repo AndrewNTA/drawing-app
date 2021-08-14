@@ -6,6 +6,8 @@
     cursor: pointer;
     border-radius: 6px;
     border: 2px solid #333333;
+    margin: 0 15px;
+    text-align: center;
 }
 
 .button-container:hover {

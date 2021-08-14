@@ -1,10 +1,10 @@
 import React from 'react';
-import Button from './components/Button';
+import DrawingView from './containers/DrawingView';
 
 function App() {
   return (
     <div className="App">
-      <Button onClick={console.log('hello')} text={'say hello'}/>
+      <DrawingView />
     </div>
   );
 }
