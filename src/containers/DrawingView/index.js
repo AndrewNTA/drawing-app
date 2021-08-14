@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import Button from '../../components/Button';
 import './styles.css';
 
 const DrawingView = () => {
+  const menuBarRef = useRef(null);
+  const menuBarHeight = menuBarRef.current && menuBarRef.current.clientHeight || 0;
+
+  useLayoutEffect(() => {
+    const canvas = document.getElementById("drawing-canvas");
+    const context = canvas.getContext("2d");
+
+    context.strokeRect(100, 100, 150, 100);
+  });
+
   return (<div className="drawing-view-container">
-    <div className="drawing-menu-bar">
+    <div className="drawing-menu-bar" ref={menuBarRef}>
       <Button
         onClick={() => {}}
         text={'Selection'}
@@ -22,6 +32,15 @@ const DrawingView = () => {
       />
       <Button onClick={() => {}} text={'Undo'}/>
       <Button onClick={() => {}} text={'Re-undo'}/>
+    </div>
+    <div className="drawing-screen">
+      <canvas
+        id="drawing-canvas"
+        width={window.innerWidth}
+        height={window.innerHeight - menuBarHeight}
+      >
+        Canvas
+      </canvas>
     </div>
   </div>)
 };
