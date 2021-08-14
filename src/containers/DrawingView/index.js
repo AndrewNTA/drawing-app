@@ -61,7 +61,7 @@ const DrawingView = () => {
     <div className="drawing-menu-bar">
       <Button
         onClick={() => {}}
-        text={'Selection'}
+        text={'Select'}
         title={'Select an element and move'}
       />
       <Button
