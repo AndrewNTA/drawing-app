@@ -1,0 +1,13 @@
+.button-container {
+    display: inline-block;
+    padding: 10px 25px;
+    box-sizing: border-box;
+    min-width: 120px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 2px solid #333333;
+}
+
+.button-container:hover {
+    background-color: #dcdcdc;
+}
