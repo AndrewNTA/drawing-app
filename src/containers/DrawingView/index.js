@@ -5,14 +5,20 @@ import './styles.css';
 
 const generator = rough.generator();
 
-const createLineElement = (x1, y1, x2, y2) => {
-  const roughElement = generator.line(x1, y1, x2, y2);
+const LINE = 'LINE';
+const RECTANGLE = 'RECTANGLE';
+
+const createElement = (x1, y1, x2, y2, type) => {
+    const roughElement = type === LINE
+      ? generator.line(x1, y1, x2, y2)
+      : generator.rectangle(x1, y1, x2 - x1, y2 - y1);
   return { x1, y1, x2, y2, roughElement }
 };
 
 const DrawingView = () => {
   const [elements, setElements] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [elementType, setElementType] = useState('LINE');
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("drawing-canvas");
@@ -32,7 +38,7 @@ const DrawingView = () => {
     const { clientX, clientY } = e;
     const index = elements.length - 1;
     const { x1, y1 } = elements[index];
-    const updatedElement = createLineElement(x1, y1, clientX, clientY);
+    const updatedElement = createElement(x1, y1, clientX, clientY, elementType);
 
     const newElements = [...elements];
     newElements[index] = updatedElement;
@@ -43,7 +49,7 @@ const DrawingView = () => {
     setIsDrawing(true);
 
     const { clientX, clientY } = e;
-    const element = createLineElement(clientX, clientY, clientX, clientY);
+    const element = createElement(clientX, clientY, clientX, clientY, elementType);
     setElements(prevState => [...prevState, element]);
   };
 
@@ -59,14 +65,16 @@ const DrawingView = () => {
         title={'Select an element and move'}
       />
       <Button
-        onClick={() => {}}
+        onClick={() => {setElementType(LINE)}}
         text={'Line'}
         title={'Draw a line element, you can resize this element'}
+        isSelected={elementType === LINE}
       />
       <Button
-        onClick={() => {}}
+        onClick={() => {setElementType(RECTANGLE)}}
         text={'Rectangle'}
         title={'Draw a rectangle element, you can resize this element'}
+        isSelected={elementType === RECTANGLE}
       />
       <Button onClick={() => {}} text={'Undo'}/>
       <Button onClick={() => {}} text={'Re-undo'}/>

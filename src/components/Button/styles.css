@@ -12,6 +12,11 @@
     transition: all 0.3s;
 }
 
+.button-container.button-selected {
+    background-color: chartreuse;
+    color: blue;
+}
+
 .button-container:hover {
     background-color: white;
     color: black;
